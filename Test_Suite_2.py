@@ -5,13 +5,13 @@ import HD_Test_Tools
 #################################################
 def test_case_4():
     print("Running test_case_4")
-    return(4)
+    return("PASSED with flying colors")
 
 #################################################
 def test_case_5():
     result = 5
     print("Running Test Case 5")
-    return (result)
+    return "FAILED miserably"
 
 #################################################
 def test_case_6():
