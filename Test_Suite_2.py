@@ -20,7 +20,7 @@ def test_case_6():
     return (result)
 
 #################################################
-def test_case_9():
-    result = 9
-    print("Running Test Case 9")
+def test_case_10():
+    result = 10
+    print("Running Test Case 10")
     return (result)
