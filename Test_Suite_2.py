@@ -15,9 +15,9 @@ def test_case_5():
 
 #################################################
 def test_case_6():
-    result = 6
-    print("Running Test Case 6")
-    return (result)
+    result = "inconclusive, test crashed"
+    print("Running Test Case 6: ", result)
+    return result
 
 #################################################
 def test_case_10():
