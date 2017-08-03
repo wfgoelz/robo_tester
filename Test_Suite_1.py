@@ -3,7 +3,7 @@
 import HD_Test_Tools
 
 def test_case_1():
-    ODROID = False
+    ODROID = True
     VS_DEBUG = False                        # Set True if debugging with Visual Studio
 
     if VS_DEBUG == True:
@@ -35,7 +35,7 @@ def test_case_1():
     from datetime import date, datetime     # Required for timestamp entries in database.
     import json								# Required for extracting shade_id from shade list from hub.
     import base64							# Required for extracting shade_id from shade list from hub.
-    from collections import namedtuple
+    # from collections import namedtuple
     import dlipower                         # Required for remote IP power switch
     ###############################################################################################
     #                            READ CONFIGURATION ITEMS from config.txt
@@ -140,6 +140,178 @@ def test_case_1():
         print("After update, shade reports it is running firmware version ",firmware_rev)
     else:
         print('No firmware update attempted')
+
+    scenes = {"Open": "46626",
+              "Top Mid": "34674",
+              "Mid": "23118",
+              "Low": "17805",
+              "Closed": "34924",
+              }
+
+    right_target_in = {"Open": 2.008,  # Target is the desired rail position in inches for each scene
+                       "Top Mid": 16.575,
+                       "RT_UP LT_DN": 16.575,
+                       "LT_UP RT_DN": 71.417,
+                       "Mid": 47.220,
+                       "Bad Scene": 99.99,
+                       "Low": 71.417,
+                       "Closed": 83.937
+                       }
+    left_target_in = {"Open": 2.441,  # Target is the desired rail position in inches for each scene
+                      "Top Mid": 15.512,
+                      "RT_UP LT_DN": 70.315,
+                      "LT_UP RT_DN": 15.512,
+                      "Mid": 25.354,
+                      "Bad Scene": 99.99,
+                      "Low": 70.315,
+                      "Closed": 43.346
+                      }
+    position_tolerance_in = .25  # Acceptable position tollerance in +- inches.
+    max_idle_current = .000080  # Current must be < 80 uA to pass idele current test
+    dwell_time = 30  # Wait 120 seconds between scene moves so as to not toast the gearboxes
+
+    ############################################################################################
+    # Scene_runner
+    ############################################################################################
+    def scene_runner(target_scene_name):
+        shade_name = "test shade"
+        print("\r\n\nRunning scene: " + target_scene_name)
+        hub.run_scene(scenes[target_scene_name])
+        time.sleep(dwell_time)
+        print("Measuring current.")
+        average_current = keithley_dmm.calc_average_current()
+        if average_current > max_idle_current:
+            print("Sleep current test FAILED. Avg. current of %6.6f A exceeds 80uA" % average_current)
+            sleep_current_result = False
+        else:
+            print("Sleep current test PASSED. Avg. current was %6.6f A" % average_current)
+            sleep_current_result = True
+
+        actual_position_in = laser_1.read_distance()
+        desired_position_in = left_target_in[target_scene_name]
+        deviation_in = desired_position_in - actual_position_in
+        print("Target position = %6.3f and actual position = %6.3f inches" % (desired_position_in, actual_position_in))
+        if abs(deviation_in) < position_tolerance_in:
+            print("Deviation = %6.3f in." % deviation_in)
+            print("PASS: Position in range")
+            position_test_result = True
+        else:
+            print("Deviation = %6.3f in." % deviation_in)
+            print("FAIL: Position out of range")
+            position_test_result = False
+
+        pass_number = loop
+        now = datetime.now()
+        db_cursor.execute(
+            '''INSERT INTO scene_runner (Run_Time,Shade_Name,Current_Test_Passed,Average_Current,Position_Test_Passed,Pass_Number,Scene_Name, Target_Distance, Deviation,Scene_ID) VALUES(?,?,?, ?, ?, ?, ?, ?, ?, ?)''',
+            (now, shade_name, sleep_current_result, average_current, position_test_result, pass_number,
+             target_scene_name, desired_position_in, deviation_in, scenes[target_scene_name],))
+        db_conn.commit()
+
+    def dual_scene_runner(target_scene_name):
+
+        print("\r\n\nRunning scene: " + target_scene_name)
+        pass_number = loop
+        hub.run_scene(scenes[target_scene_name])
+        time.sleep(dwell_time)  # Allow time to run to scene and settle
+        print("Measuring Left current.")
+        average_current = left_dmm.calc_average_current()
+        if average_current > max_idle_current:
+            print("Left Sleep current test FAILED. Avg. current of %6.6f A exceeds 80uA" % average_current)
+            sleep_current_result = False
+        else:
+            print("Left Sleep current test PASSED. Avg. current was %6.6f A" % average_current)
+            sleep_current_result = True
+
+        print("Measuring Left Distance.")
+        actual_position_in = laser_1.read_distance()
+        desired_position_in = left_target_in[target_scene_name]
+        deviation_in = desired_position_in - actual_position_in
+        print("Target position = %6.3f and actual position = %6.3f inches" % (desired_position_in, actual_position_in))
+        if abs(deviation_in) < position_tolerance_in:
+            print("Deviation = %6.3f in." % deviation_in)
+            print("PASS: Position in range")
+            position_test_result = True
+        else:
+            print("Deviation = %6.3f in." % deviation_in)
+            print("FAIL: Position out of range")
+            position_test_result = False
+
+        now = datetime.now()
+        shade_name = "Left Shade"
+        db_cursor.execute(
+            '''INSERT INTO scene_runner (Run_Time,Shade_Name,Current_Test_Passed,Average_Current,Position_Test_Passed,Pass_Number,Scene_Name, Target_Distance, Deviation,Scene_ID) VALUES(?,?,?, ?, ?, ?, ?, ?, ?, ?)''',
+            (now, shade_name, sleep_current_result, average_current, position_test_result, pass_number,
+             target_scene_name, desired_position_in, deviation_in, scenes[target_scene_name],))
+        db_conn.commit()
+
+        print("Measuring Right current.")
+        average_current = right_dmm.calc_average_current()
+        if average_current > max_idle_current:
+            print("Right Sleep current test FAILED. Avg. current of %6.6f A exceeds 80uA" % average_current)
+            sleep_current_result = False
+        else:
+            print("Right Sleep current test PASSED. Avg. current was %6.6f A" % average_current)
+            sleep_current_result = True
+
+        print("Measuring Right Distance.")
+        actual_position_in = right_laser.read_distance()
+        desired_position_in = right_target_in[target_scene_name]
+        deviation_in = desired_position_in - actual_position_in
+        print("Target position = %6.3f and actual position = %6.3f inches" % (desired_position_in, actual_position_in))
+        if abs(deviation_in) < position_tolerance_in:
+            print("Deviation = %6.3f in." % deviation_in)
+            print("PASS: Position in range")
+            position_test_result = True
+        else:
+            print("Deviation = %6.3f in." % deviation_in)
+            print("FAIL: Position out of range")
+            position_test_result = False
+
+        now = datetime.now()
+        shade_name = "Right Shade"
+        db_cursor.execute(
+            '''INSERT INTO scene_runner (Run_Time,Shade_Name,Current_Test_Passed,Average_Current,Position_Test_Passed,Pass_Number,Scene_Name, Target_Distance, Deviation,Scene_ID) VALUES(?,?,?, ?, ?, ?, ?, ?, ?, ?)''',
+            (now, shade_name, sleep_current_result, average_current, position_test_result, pass_number,
+             target_scene_name, desired_position_in, deviation_in, scenes[target_scene_name],))
+        db_conn.commit()
+
+    # ###############################################################
+    #       TEST EACH SCENE IN SCENES. LOOP AS DESIRED.
+    #################################################################
+    # psVoltage = 18.0  # Initial test value, can be reset as desired
+    # ps1.powerON()  # Remote control for Keysight E3642A Bench Supply
+    # time.sleep(5)  # Allow shade to power up
+
+    loop = 1
+    # switch.on(8)
+    while loop <= 5:
+        # results are displayed on console and logged to database
+        # NOTE: Operation pauses for dwell_time after the move before measurements are taken.
+
+        # print("\r\n\nRunning scene MID with power fail\r\n")
+        # hub.run_scene(scenes["Mid"])    #Returns immediately
+        # time.sleep(4)
+        # switch.off(8)                   # Kill power while moving to Closed position
+        # time.sleep(5)                   # 5 Seconds should be enough to disipate power.
+        # switch.on(8)
+        # time.sleep(5)                   # Allow time to boot.
+        scene_runner("Open")  # Returns when move is complete. Logs status.
+        scene_runner("Mid")
+        scene_runner("Closed")
+        scene_runner("Mid")
+        loop += 1
+        # ps1.powerOFF()
+        # time.sleep(10)
+        # psVoltage -= .5  # Decrease by .5 volts after each loop
+        # ps1.setVolt_Current(psVoltage, 2.0)
+        # ps1.powerON()
+        # time.sleep(5)
+
+    # ps1.powerOFF()  # Remote control for Keysight E2A Bench Supply
+    print("TEST COMPLETE!")
+    return "PASSED"                         # Report test result to Test Rail
+
 
 #################################################
 def test_case_2():
