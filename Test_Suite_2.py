@@ -18,3 +18,9 @@ def test_case_6():
     result = 6
     print("Running Test Case 6")
     return (result)
+
+#################################################
+def test_case_7():
+    result = 7
+    print("Running Test Case 7")
+    return (result)
