@@ -8,8 +8,8 @@ def test_case_1():
 
     if VS_DEBUG == True:
         # Use ptvsd for remote debugging on Linux target using Visual Studio
-        import ptvsd                           # Used for remote debugging of Python script using Visual Studio 2017
-        ptvsd.enable_attach('my_secret')       # "my_secret" is the remote connection password.
+        import ptvsd                        # Used for remote debugging of Python script using Visual Studio 2017
+        ptvsd.enable_attach('my_secret')    # "my_secret" is the remote connection password.
         print('Waiting for remote debugger to attach')
         ptvsd.wait_for_attach()
         print("Attached!")
@@ -17,7 +17,7 @@ def test_case_1():
     # For Odroid only, we have head button control via GPIO
     if ODROID == True:
         from head_button_control import HEAD_BUTTON
-        button = HEAD_BUTTON(1)                	# Use GPIO pin 1 for head button solenoid.
+        button = HEAD_BUTTON(21)            # Use GPIO pin 1 for head button solenoid.
 
     hexOpen_cmd = '52 55'                   # Hex commands used for hub REST payload
     hexClose_cmd = '52 44'
@@ -64,8 +64,9 @@ def test_case_1():
     power_switch_IP_addr = config['POWER_SWITCH_IP_ADDR']
     database_name = config['DATABASE_NAME']
     target_shade_name = config['DUT_SHADE_NAME']
-    keithley_DMM_serial_num = config['VISA_DMM_1']  # For Keithley USM DMMs, use the serial number from the data tag or rear of meter.
-    keithley_DMM_USB_num = 'USB0'               # Always seems to enumerate on USB0. Not sure why.
+    keithley_DMM_serial_num = config['VISA_DMM_1']  # For Keithley USM DMMs, use the serial number from
+                                                    #  the data tag or rear of meter.
+    keithley_DMM_USB_num = 'USB0'                   # Always seems to enumerate on USB0. Not sure why.
 
     default_shade_id = '9999'
     shade_id = default_shade_id                 # Default value. Match will be found by comparing
