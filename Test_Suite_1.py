@@ -60,7 +60,7 @@ def test_case_1():
     else:
         laser_1_port = 'COM3'                   # For Windows overload value from config.txt
 
-    hub_URL = 'http://' + config['HUB_IP_1'] + ':3000/api/'     # Hub 2.0   HD Office
+    hub_URL = 'http://' + config['HUB_IP_1'] + '/api/'     # Hub 2.0   HD Office
     power_switch_IP_addr = config['POWER_SWITCH_IP_ADDR']
     database_name = config['DATABASE_NAME']
     target_shade_name = config['DUT_SHADE_NAME']
