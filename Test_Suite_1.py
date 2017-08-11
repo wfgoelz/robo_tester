@@ -2,7 +2,7 @@
 # import os
 import HD_Test_Tools
 
-def test_case_1():
+def Position_Drift_Test():
     ODROID = True
     VS_DEBUG = False                        # Set True if debugging with Visual Studio
 
