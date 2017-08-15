@@ -6,14 +6,6 @@ def Position_Drift_Test():
     ODROID = True
     VS_DEBUG = False                        # Set True if debugging with Visual Studio
 
-    if VS_DEBUG == True:
-        # Use ptvsd for remote debugging on Linux target using Visual Studio
-        import ptvsd                        # Used for remote debugging of Python script using Visual Studio 2017
-        ptvsd.enable_attach('my_secret')    # "my_secret" is the remote connection password.
-        print('Waiting for remote debugger to attach')
-        ptvsd.wait_for_attach()
-        print("Attached!")
-
     # For Odroid only, we have head button control via GPIO
     if ODROID == True:
         from head_button_control import HEAD_BUTTON
