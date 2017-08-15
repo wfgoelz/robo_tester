@@ -134,11 +134,11 @@ def Position_Drift_Test():
     else:
         print('No firmware update attempted')
 
-    scenes = {"Open": "46626",
-              "Top Mid": "34674",
-              "Mid": "23118",
-              "Low": "17805",
-              "Closed": "34924",
+    scenes = {"Open": "44051",
+              "Top Mid": "57236",
+              "Mid": "8832",
+              "Low": "8014",
+              "Closed": "33766",
               }
 
     right_target_in = {"Open": 2.008,  # Target is the desired rail position in inches for each scene
