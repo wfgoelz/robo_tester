@@ -309,10 +309,10 @@ def Position_Drift_Test():
 #################################################
 def test_case_2():
     print("Running test_case_2")
-    return (2)
+    return "PASSED"                         # Report test result to Test Rail
 
 #################################################
 def test_case_3():
     result = 3
     print("Running Test Case 3")
-    return (result)
+    return "FAILED"                         # Report test result to Test Rail
