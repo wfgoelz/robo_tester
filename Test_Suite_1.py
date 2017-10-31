@@ -6,14 +6,6 @@ def Position_Drift_Test():
     ODROID = False
     VS_DEBUG = False                        # Set True if debugging with Visual Studio
 
-    if VS_DEBUG == True:
-        # Use ptvsd for remote debugging on Linux target using Visual Studio
-        import ptvsd                        # Used for remote debugging of Python script using Visual Studio 2017
-        ptvsd.enable_attach('my_secret')    # "my_secret" is the remote connection password.
-        print('Waiting for remote debugger to attach')
-        ptvsd.wait_for_attach()
-        print("Attached!")
-
     # For Odroid only, we have head button control via GPIO
     if ODROID == True:
         from head_button_control import HEAD_BUTTON
@@ -142,11 +134,11 @@ def Position_Drift_Test():
     else:
         print('No firmware update attempted')
 
-    scenes = {"Open": "46626",
-              "Top Mid": "34674",
-              "Mid": "23118",
-              "Low": "17805",
-              "Closed": "34924",
+    scenes = {"Open": "44051",
+              "Top Mid": "57236",
+              "Mid": "8832",
+              "Low": "8014",
+              "Closed": "33766",
               }
 
     right_target_in = {"Open": 2.008,  # Target is the desired rail position in inches for each scene
@@ -317,10 +309,10 @@ def Position_Drift_Test():
 #################################################
 def test_case_2():
     print("Running test_case_2")
-    return (2)
+    return "PASSED"                         # Report test result to Test Rail
 
 #################################################
 def test_case_3():
     result = 3
     print("Running Test Case 3")
-    return (result)
+    return "FAILED"                         # Report test result to Test Rail
