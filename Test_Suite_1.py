@@ -3,7 +3,7 @@
 import HD_Test_Tools
 
 def Position_Drift_Test():
-    ODROID = True
+    ODROID = False
     VS_DEBUG = False                        # Set True if debugging with Visual Studio
 
     if VS_DEBUG == True:
@@ -58,7 +58,7 @@ def Position_Drift_Test():
     if ODROID == True:
         laser_1_port = '/dev/ttyUSB0'           # For Linux
     else:
-        laser_1_port = 'COM3'                   # For Windows overload value from config.txt
+        laser_1_port = 'COM11'                   # For Windows overload value from config.txt
 
     hub_URL = 'http://' + config['HUB_IP_1'] + '/api/'     # Hub 2.0   HD Office
     power_switch_IP_addr = config['POWER_SWITCH_IP_ADDR']
@@ -85,9 +85,9 @@ def Position_Drift_Test():
     switch = dlipower.PowerSwitch(hostname=power_switch_IP_addr, userid='admin', password='1234')
 
     # Keysight 2110 USB connection on Linux. Find the USB number with ls \
-    print("Initializing Keithley DMM")
-    keithley_DDM1_address  = keithley_DMM_USB_num + '::0x05E6::0x2110::' + keithley_DMM_serial_num + '::INSTR'
-    keithley_dmm = VISA_DMM(keithley_DDM1_address, 0.00)
+    #print("Initializing Keithley DMM")
+    #keithley_DDM1_address  = keithley_DMM_USB_num + '::0x05E6::0x2110::' + keithley_DMM_serial_num + '::INSTR'
+    #keithley_dmm = VISA_DMM(keithley_DDM1_address, 0.00)
 
     #print("Initializing Keysight E3642A Bench Power Supply")
     #ps1 = KeysightE3642A(ps1_port, 18.0, 2.0)  # Initialize power supply @ 18 Volts 2.0 Amps
