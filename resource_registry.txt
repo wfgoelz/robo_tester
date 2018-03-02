@@ -1,3 +1,2 @@
-{"source_file":"Test_Suite_1","cases":["test_case_1","test_case_2","test_case_3","Position_Drift_Test"]}
-{"source_file":"Test_Suite_2","cases":["test_case_4", "test_case_5","test_case_6","test_case_10"]}
-{"source_file":"Test_Suite_3","cases":["test_case_7", "test_case_8", "test_case_9"]}
+{"source_file":"test_suite_a","test_suites":["Position Loss Test Suite","test suite 2","test suite 3"]}
+{"source_file":"test_suite_b","test_suites":["Remote_Testing", "test suite 4","test suite 5","test suite 6"]}
